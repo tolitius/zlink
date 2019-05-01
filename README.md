@@ -37,7 +37,7 @@ that `42` was added by Python on the [other side](test/python/server.py#L7).
 
 ## Silly Bench
 
-9,000 chats/s
+`9,000 chats/s` that's round trips with JSON in and out
 
 ```clojure
 => (time (dotimes [_ 9000] (talk data)))
@@ -46,9 +46,9 @@ that `42` was added by Python on the [other side](test/python/server.py#L7).
 
 ### multiple pipes
 
-23,000 chats/s
+`23,000 chats/s` that's round trips with JSON in and out
 
-```
+```clojure
 => (def talk (z/zpipes {:host "localhost
                         :start-port 5555
                         :pnum 42
