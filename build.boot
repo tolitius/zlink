@@ -2,10 +2,11 @@
 
 (set-env!
   :source-paths #{"src"}
-  :dependencies '[[org.clojure/clojure      "1.10.0"]
-                  [org.clojure/tools.logging "0.4.1"]
-                  [metosin/jsonista "0.2.2"]
-                  [zmq/zmq "4.0.5"]
+  :dependencies '[[org.clojure/clojure        "1.10.0"]
+                  [org.clojure/tools.logging  "0.4.1"]
+                  [lasync                     "0.1.11"]
+                  [metosin/jsonista           "0.2.2"]
+                  [zmq/zmq                    "4.0.5"]
 
                   ;; boot clj
                   [boot/core                "2.8.3"           :scope "provided"]

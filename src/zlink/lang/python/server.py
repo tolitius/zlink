@@ -17,7 +17,7 @@ def listen(process, host, port):
 
     while True:
 	message = socket.recv()
-	# print("received: %s" % message)
+	# print("received [%d]: %s" % (port, message))
 	event = json.loads(message)
 	socket.send(json.dumps(process(event)))
 
@@ -29,4 +29,3 @@ if __name__ == '__main__':
 
     for port in range(start_from_port, server_number + start_from_port):
 	mp.Process(target=listen, args=(rock_on, "*", port)).start()
-

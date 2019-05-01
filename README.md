@@ -37,9 +37,26 @@ that `42` was added by Python on the [other side](test/python/server.py#L7).
 
 ## Silly Bench
 
+9,000 chats/s
+
 ```clojure
 => (time (dotimes [_ 9000] (talk data)))
 "Elapsed time: 1022.295091 msecs"
+```
+
+### multiple pipes
+
+23,000 chats/s
+
+```
+=> (def talk (z/zpipes {:host "localhost
+                        :start-port 5555
+                        :pnum 42
+                        :consume (fn [r] (-> (String. r) json/read-value))}))
+
+=> (time (last (mapv #(.get %) (map (fn [_] (talk data)) (range 23000)))))
+"Elapsed time: 962.826325 msecs"
+["answer to the ultimate question of life universe and everything" 42]
 ```
 
 _and_ could be improved: serialization, different zmq topology, etc.
