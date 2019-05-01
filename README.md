@@ -24,9 +24,9 @@ in a different terminal start zlink REPL:
 ;; data is anything that can be converted to bytes, in this case some JSON
 => (def data (.getBytes "[\"answer to the ultimate question of life universe and everything\"]"))
 
-=> (def talk (z/zpipe "tcp://localhost:5555"
-                      (fn [r] (-> (String. r)
-                                  json/read-value))))
+=> (def talk (z/z-pipe "tcp://localhost:5555"
+                       (fn [r] (-> (String. r)
+                                   json/read-value))))
 ```
 ```
 => (talk data)
@@ -49,10 +49,10 @@ that `42` was added by Python on the [other side](test/python/server.py#L7).
 `23,000 chats/s` that's round trips with JSON in and out
 
 ```clojure
-=> (def talk (z/zpipes {:host "localhost
-                        :start-port 5555
-                        :pnum 42
-                        :consume (fn [r] (-> (String. r) json/read-value))}))
+=> (def talk (z/z-pipes {:host "localhost
+                         :start-port 5555
+                         :pnum 42
+                         :consume (fn [r] (-> (String. r) json/read-value))}))
 
 => (time (last (mapv #(.get %) (map (fn [_] (talk data)) (range 23000)))))
 "Elapsed time: 962.826325 msecs"

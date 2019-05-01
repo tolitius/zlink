@@ -1,13 +1,13 @@
-import time
 import json
 import zmq
+import getopt
 import multiprocessing as mp
 
 def rock_on(event):
     event.append(42)
     return event
 
-def listen(process, host, port):
+def rep_server(process, host, port):
 
     context = zmq.Context()
     socket = context.socket(zmq.REP)
@@ -21,11 +21,11 @@ def listen(process, host, port):
 	event = json.loads(message)
 	socket.send(json.dumps(process(event)))
 
-
-if __name__ == '__main__':
-    start_from_port = 5555
-    # server_number = 42
-    server_number = 1
+def start_rep(start_from_port, server_number, fn):
 
     for port in range(start_from_port, server_number + start_from_port):
-	mp.Process(target=listen, args=(rock_on, "*", port)).start()
+	mp.Process(target=rep_server, args=(fn, "*", port)).start()
+
+if __name__ == '__main__':
+    start_rep(start_from_port=5555, server_number=1, fn=rock_on)
+
