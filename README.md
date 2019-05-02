@@ -19,14 +19,12 @@ in a different terminal start zlink REPL:
 ### Rock & Roll
 
 ```clojure
-=> (require '[zlink.core :as z] '[jsonista.core :as json])
+=> (require '[zlink.core :as z])
 
 ;; data is anything that can be converted to bytes, in this case some JSON
 => (def data (.getBytes "[\"answer to the ultimate question of life universe and everything\"]"))
 
-=> (def talk (z/z-pipe "tcp://localhost:5555"
-                       (fn [r] (-> (String. r)
-                                   json/read-value))))
+=> (def talk (z/z-pipe "tcp://localhost:5555" z/json-in))
 ```
 ```
 => (talk data)
@@ -52,7 +50,7 @@ that `42` was added by Python on the [other side](test/python/server.py#L7).
 => (def talk (z/z-pipes {:host "localhost
                          :start-port 5555
                          :pnum 42
-                         :consume (fn [r] (-> (String. r) json/read-value))}))
+                         :consume z/json-in}))
 
 => (time (last (mapv #(.get %) (map (fn [_] (talk data)) (range 23000)))))
 "Elapsed time: 962.826325 msecs"

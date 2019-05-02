@@ -27,5 +27,5 @@ def start_rep(start_from_port, server_number, fn):
 	mp.Process(target=rep_server, args=(fn, "*", port)).start()
 
 if __name__ == '__main__':
-    start_rep(start_from_port=5555, server_number=1, fn=rock_on)
+    start_rep(start_from_port=5555, server_number=42, fn=rock_on)
 

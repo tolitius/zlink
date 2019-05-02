@@ -46,6 +46,10 @@
   (doto socket
     (.connect url)))
 
+(defn close
+  [#^ZMQ$Socket socket]
+  (.close socket))
+
 (defn subscribe
   ([#^ZMQ$Socket socket #^String topic]
      (doto socket
