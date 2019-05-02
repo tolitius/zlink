@@ -4,7 +4,7 @@ talking across languages
 
 ## Data Talks
 
-start a [zmq server](test/python/server.py) in any language, say Python:
+start a [zmq server](src/zlink/lang/python/server.py) in any language, say Python:
 
 ```bash
 [zlink]$ python test/python/server.py
@@ -31,7 +31,7 @@ in a different terminal start zlink REPL:
 ["answer to the ultimate question of life universe and everything" 42]
 ```
 
-that `42` was added by Python on the [other side](test/python/server.py#L7).
+that `42` was added by Python on the [other side](src/zlink/lang/python/server.py#L7).
 
 ## Silly Bench
 
