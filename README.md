@@ -59,6 +59,39 @@ that `42` was added by Python on the [other side](src/zlink/lang/python/server.p
 
 _and_ could be improved: serialization, different zmq topology, etc.
 
+## gRPC
+
+```bash
+[zlink]$ python grpc/python/server.py
+```
+
+in another terminal (in REPL):
+
+```clojure
+=> (require '[zlink.grpc.client :as gc])
+
+=> (def piper (gc/piper "localhost" 50051))
+#'boot.user/piper
+=> piper
+#object[io.data.pipe.PiperClient 0x414a1f16 "io.data.pipe.PiperClient@414a1f16"]
+
+=> (def req (gc/request "[\"answer to the ultimate question of life universe and everything\"]"))
+#'boot.user/req
+=> req
+#object[io.data.pipe.DataRequest 0x3cacdc40 "data: \"[\\\"answer to the ultimate question of life universe and everything\\\"]\"\n"]
+```
+```clojure
+boot.user=> (gc/pipe-it piper req)
+"[\"answer to the ultimate question of life universe and everything\", 42]"
+```
+
+`42` came from the [gRPC python server](grpc/python/server.py#L15)
+
+```clojure
+boot.user=> (time (dotimes [_ 2700] (gc/pipe-it piper req)))
+"Elapsed time: 1004.712208 msecs"
+```
+
 ## ZeroMQ & Java Bindings
 
 Since "ZeroMQ" is a default queuing mechanism, and zlink is JVM (Clojure), ZeroMQ [libraries](http://www.zeromq.org/intro:get-the-software) and [Java bindings](http://www.zeromq.org/bindings:java) need to be installed, in order for zlink to run.

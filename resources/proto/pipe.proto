@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.data.pipe";
+option java_outer_classname = "DataPipeProto";
+option objc_class_prefix = "DP";
+
+package pipe;
+
+// the data pipe service definition
+service Piper {
+  // processes request and sends a response
+  rpc Send (DataRequest) returns (DataResponse) {}
+}
+
+// request with string (i.e. JSON) data
+message DataRequest {
+  string data = 1;
+}
+
+// response with string (i.e. JSON) data
+message DataResponse {
+  string data = 1;
+}

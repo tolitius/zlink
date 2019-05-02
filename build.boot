@@ -1,9 +1,13 @@
 (def +version+ "0.1.0")
 
 (set-env!
-  :source-paths #{"src"}
+  :source-paths #{"src" "grpc/java"}
   :dependencies '[[org.clojure/clojure        "1.10.0"]
                   [org.clojure/tools.logging  "0.4.1"]
+                  [com.google.protobuf/protobuf-java "3.5.1"]
+                  [io.grpc/grpc-stub          "1.20.0"]
+                  [io.grpc/grpc-protobuf      "1.20.0"]
+                  [io.grpc/grpc-netty-shaded  "1.20.0"]
                   [lasync                     "0.1.11"]
                   [metosin/jsonista           "0.2.2"]
                   [zmq/zmq                    "4.0.5"]
@@ -23,6 +27,7 @@
 (deftask dev []
   (System/setProperty "java.library.path"
                       (str "native/:" (System/getenv "LD_LIBRARY_PATH")))
+  (javac)
   (repl))
 
 (deftask check-sources []
