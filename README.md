@@ -1,16 +1,53 @@
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # zlink
 
 talking across languages
 
-## Data Talks
+- [What is it?](#what-is-it)
+- [ØMQ based communication](#%C3%B8mq-based-communication)
+  - [Start a ØMQ server](#start-a-%C3%B8mq-server)
+  - [Start REPL](#start-repl)
+  - [Rock & Roll](#rock-&-roll)
+  - [Silly Bench](#silly-bench)
+    - [Multiple Pipes](#multiple-pipes)
+- [gRPC based communication](#grpc-based-communication)
+  - [Start a gRPC server](#start-a-grpc-server)
+  - [Start REPL](#start-repl-1)
+  - [Silly Bench](#silly-bench-1)
+- [ZeroMQ & Java Bindings](#zeromq-&-java-bindings)
+- [License](#license)
 
-start a [zmq server](src/zlink/lang/python/server.py) in any language, say Python:
+## What is it?
+
+This is an exploratary attempt to have a fast communication between languages. There are many bridges and ways to do that but most of them have a limitation of coupling different langauge environments together, whether it's communcating over C bindings or running one VM inside another.
+
+`zlink` takes a different approach: langauges need to live and run in their own environements while communication should be done over pipes / channels / sockets, etc.
+
+There are more to do:
+
+* good channel/ pipe abstraction
+* pluggable tech: i.e. zMQ, gRPC, etc.
+* communication topology
+* pluggable serialization
+* .. and more
+
+## ØMQ based communication
+
+This would run a Python server and have JVM client passing data to it and getting a response back over the ØMQ based pipe.
+
+### Start a ØMQ server
+
+Start a [zmq server](src/zlink/lang/python/server.py) in any language, say Python:
 
 ```bash
 [zlink]$ python test/python/server.py
 ```
 
-in a different terminal start zlink REPL:
+### Start REPL
+
+In a different terminal navigate to in zlink source root and start a zlink REPL:
 
 ```bash
 [zlink]$ boot dev
@@ -33,7 +70,7 @@ in a different terminal start zlink REPL:
 
 that `42` was added by Python on the [other side](src/zlink/lang/python/server.py#L7).
 
-## Silly Bench
+### Silly Bench
 
 `9,000 chats/s` that's round trips with JSON in and out
 
@@ -42,7 +79,7 @@ that `42` was added by Python on the [other side](src/zlink/lang/python/server.p
 "Elapsed time: 1022.295091 msecs"
 ```
 
-### multiple pipes
+#### Multiple Pipes
 
 `23,000 chats/s` that's round trips with JSON in and out
 
@@ -59,13 +96,19 @@ that `42` was added by Python on the [other side](src/zlink/lang/python/server.p
 
 _and_ could be improved: serialization, different zmq topology, etc.
 
-## gRPC
+## gRPC based communication
+
+### Start a gRPC server
+
+Start a [gRPC server](src/zlink/lang/python/server.py) in any language, say Python:
 
 ```bash
 [zlink]$ python grpc/python/server.py
 ```
 
-in another terminal (in REPL):
+### Start REPL
+
+In a different terminal navigate to in zlink source root and start a zlink REPL:
 
 ```clojure
 => (require '[zlink.grpc.client :as gc])
@@ -86,6 +129,8 @@ boot.user=> (gc/pipe-it piper req)
 ```
 
 `42` came from the [gRPC python server](grpc/python/server.py#L15)
+
+### Silly Bench
 
 ```clojure
 boot.user=> (time (dotimes [_ 2700] (gc/pipe-it piper req)))
