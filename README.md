@@ -16,6 +16,7 @@ talking across languages
   - [Start a gRPC server](#start-a-grpc-server)
   - [Start REPL](#start-repl-1)
   - [Silly Bench](#silly-bench-1)
+    - [Multiple Pipes](#multiple-pipes-1)
 - [ZeroMQ & Java Bindings](#zeromq-&-java-bindings)
 - [License](#license)
 
@@ -136,6 +137,17 @@ boot.user=> (gc/pipe-it piper req)
 boot.user=> (time (dotimes [_ 2700] (gc/pipe-it piper req)))
 "Elapsed time: 1004.712208 msecs"
 ```
+
+#### Multiple Pipes
+
+Starting 5 gRPC servers (i.e. 5 sockets) and making 5 pipes:
+
+```clojure
+boot.user=> (time (gc/and-wait-for-all-async [p1 p2 p3 p4 p5] req 10000))
+"Elapsed time: 1047.021289 msecs"
+```
+
+_(`5` is arbitrary, just to prove out "horizontal power")_
 
 ## ZeroMQ & Java Bindings
 
