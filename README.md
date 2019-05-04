@@ -24,7 +24,7 @@ talking across languages
 
 This is an exploratary attempt to have a fast communication between languages. There are many bridges and ways to do that but most of them have a limitation of coupling different langauge environments together, whether it's communcating over C bindings or running one VM inside another.
 
-`zlink` takes a different approach: langauges need to live and run in their own environements while communication should be done over pipes / channels / sockets, etc.
+`zlink` takes a different approach: languages need to live and run in their own environements while communication should be done over pipes / channels / sockets, etc.
 
 There are more to do:
 
