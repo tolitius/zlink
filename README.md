@@ -36,7 +36,7 @@ There are more to do:
 
 ## ØMQ based communication
 
-This would run a Python server and have JVM client passing data to it and getting a response back over the ØMQ based pipe.
+This example would run a Python server and have JVM client passing data to it and getting a response back over the ØMQ based pipe.
 
 ### Start a ØMQ server
 
@@ -60,12 +60,12 @@ In a different terminal navigate to in zlink source root and start a zlink REPL:
 => (require '[zlink.core :as z])
 
 ;; data is anything that can be converted to bytes, in this case some JSON
-=> (def data (.getBytes "[\"answer to the ultimate question of life universe and everything\"]"))
+=> (def message (.getBytes "[\"answer to the ultimate question of life universe and everything\"]"))
 
-=> (def talk (z/z-pipe "tcp://localhost:5555" z/json-in))
+=> (def pipe (z/z-pipe "tcp://localhost:5555" z/json-in))
 ```
 ```
-=> (talk data)
+=> (pipe message)
 ["answer to the ultimate question of life universe and everything" 42]
 ```
 
@@ -73,29 +73,61 @@ that `42` was added by Python on the [other side](src/zlink/lang/python/server.p
 
 ### Silly Bench
 
-`9,000 chats/s` that's round trips with JSON in and out
+`9,000 chats/s` these round trips include bytes to JSON on the way out.
 
 ```clojure
-=> (time (dotimes [_ 9000] (talk data)))
+=> (time (dotimes [_ 9000] (pipe message)))
 "Elapsed time: 1022.295091 msecs"
 ```
 
 #### Multiple Pipes
 
-`23,000 chats/s` that's round trips with JSON in and out
+There are many ways to scale, we'll start from multiple blocking servers, say `10` Python listeners:
 
-```clojure
-=> (def talk (z/z-pipes {:host "localhost
-                         :start-port 5555
-                         :pnum 42
-                         :consume z/json-in}))
-
-=> (time (last (mapv #(.get %) (map (fn [_] (talk data)) (range 23000)))))
-"Elapsed time: 962.826325 msecs"
-["answer to the ultimate question of life universe and everything" 42]
+```bash
+$ python src/zlink/lang/python/server.py
+listening on: *:5555
+listening on: *:5556
+listening on: *:5557
+listening on: *:5558
+listening on: *:5559
+listening on: *:5560
+listening on: *:5561
+listening on: *:5562
+listening on: *:5563
+listening on: *:5564
 ```
 
-_and_ could be improved: serialization, different zmq topology, etc.
+On the JVM side (REPL) instead of using req/rep simple pipe (`z-pipe`) let's use a `fan-out` pipe that would load balance messages across these `10` connections to Python listeners:
+
+```clojure
+=> (require '[zlink.core :as z] '[jsonista.core :as json])
+=> (def message (.getBytes "[\"answer to the ultimate question of life universe and everything\"]"))
+```
+```clojure
+=> (def fan (z/fan-out "deep-thought" 10 {:host "localhost" :port 5555}))
+```
+
+since we are after "going faster", let's try to decouple sends and receives by creating a separate `speaker` and `listener`:
+
+```clojure
+=> (def speaker (z/speaker fan))
+
+=> (def counter (atom 0))
+=> (def listener (z/listen fan #(do (z/json-in %)
+                                    (swap! counter inc))))
+```
+
+Whenever this listener receives an event it would read it in, parse it to JSON and increment the "counter". We would use the counter to measure roundtrips:
+
+```clojure
+=> (z/measure-async speaker message 32000 counter)
+"Elapsed time: 1041.430356 msecs"
+```
+
+`32,000 messages/s`, not bad. these round trips include bytes to JSON on the way out.
+
+_and_ could be improved: async server(s), calling servers in parallel, serialization, different zmq topology, etc.
 
 ## gRPC based communication
 
